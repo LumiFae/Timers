@@ -12,5 +12,9 @@ namespace Timers
         public Color NtfSpawnColor = Color.Blue;
         [Description("The color of the Chaos timer when Chaos are spawning.")]
         public Color ChaosSpawnColor = Color.Green;
+        [Description("The ID of the server specific setting, only change this if it conflicts with another plugin.")]
+        public int ServerSpecificSettingId { get; set; } = 333;
+        [Description("The space between each timer, in Ems.")]
+        public int SpaceBetweenTimers { get; set; } = 16;
     }
 }

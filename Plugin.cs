@@ -1,6 +1,7 @@
 ﻿using System.Text;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using Exiled.API.Features.Core.UserSettings;
 using Exiled.API.Features.Waves;
 using PlayerRoles;
 using Respawning;
@@ -9,15 +10,16 @@ using RueI.Displays;
 using RueI.Elements;
 using RueI.Extensions.HintBuilding;
 using RueI.Parsing.Enums;
+using UserSettings.ServerSpecific;
 
 namespace Timers
 {
     public class Plugin: Plugin<Config, Translation>
     {
         public override string Name => "Timers";
-        public override string Author => "JayXTQ";
+        public override string Author => "LumiFae";
         public override string Prefix => "Timers";
-        public override Version Version => new (1, 0, 0);
+        public override Version Version => new (1, 1, 0);
         public override Version RequiredExiledVersion => new (9, 0, 0);
         public override PluginPriority Priority => PluginPriority.Default;
         
@@ -40,11 +42,23 @@ namespace Timers
             _events = new();
 
             Exiled.Events.Handlers.Server.RoundStarted += _events.OnRoundStart;
+            Exiled.Events.Handlers.Player.Verified += _events.OnPlayerVerified;
             
             RespawnTimerDisplay = new(Roles.Spectator, new DynamicElement(GetTimers, 910))
             {
                 UpdateEvery = new (TimeSpan.FromSeconds(1))
             };
+
+            HeaderSetting header = new(Translation.ServerSpecificSettingHeading);
+            IEnumerable<SettingBase> settings = new SettingBase[]
+            {
+                header,
+                new TwoButtonsSetting(Config.ServerSpecificSettingId, Translation.OverlaySettingText,
+                    Translation.Enable, Translation.Disable, hintDescription: Translation.OverlaySettingHint)
+            };
+
+            SettingBase.Register(settings);
+            SettingBase.SendToAll();
             
             base.OnEnabled();
         }
@@ -52,6 +66,7 @@ namespace Timers
         public override void OnDisabled()
         {
             Exiled.Events.Handlers.Server.RoundStarted -= _events.OnRoundStart;
+            Exiled.Events.Handlers.Player.Verified -= _events.OnPlayerVerified;
             _events = null;
             base.OnDisabled();
         }
@@ -85,6 +100,10 @@ namespace Timers
             TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
 
+            SSTwoButtonsSetting setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(core.Hub, Config.ServerSpecificSettingId);
+            
+            if(setting.SyncIsB) return "";
+
             StringBuilder builder = new StringBuilder()
                 .SetAlignment(HintBuilding.AlignStyle.Center);
 
@@ -98,7 +117,7 @@ namespace Timers
             }
             
             builder
-                .AddSpace(16, MeasurementUnit.Ems);
+                .AddSpace(Config.SpaceBetweenTimers, MeasurementUnit.Ems);
 
             if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationEnemy)
             {

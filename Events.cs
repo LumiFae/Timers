@@ -1,6 +1,9 @@
-﻿using Exiled.API.Features.Waves;
+﻿using Exiled.API.Features;
+using Exiled.API.Features.Waves;
+using Exiled.Events.EventArgs.Player;
 using GameCore;
 using Respawning.Waves;
+using UserSettings.ServerSpecific;
 using Log = Exiled.API.Features.Log;
 
 namespace Timers
@@ -11,24 +14,30 @@ namespace Timers
         {
             if (TimedWave.TryGetTimedWave<NtfSpawnWave>(out TimedWave ntfWave))
             {
-                Log.Info("NtfWave found");
+                Log.Debug("NtfWave found");
                 Plugin.Instance.NtfWave = ntfWave;
             }
             if (TimedWave.TryGetTimedWave<NtfMiniWave>(out TimedWave ntfMiniWave))
             {
-                Log.Info("NtfMiniWave found");
+                Log.Debug("NtfMiniWave found");
                 Plugin.Instance.NtfMiniWave = ntfMiniWave;
             }
             if (TimedWave.TryGetTimedWave<ChaosSpawnWave>(out TimedWave chaosWave))
             {
-                Log.Info("ChaosWave found");
+                Log.Debug("ChaosWave found");
                 Plugin.Instance.ChaosWave = chaosWave;
             }
             if (TimedWave.TryGetTimedWave<ChaosMiniWave>(out TimedWave chaosMiniWave))
             {
-                Log.Info("ChaosMiniWave found");
+                Log.Debug("ChaosMiniWave found");
                 Plugin.Instance.ChaosMiniWave = chaosMiniWave;
             }
+        }
+
+        public void OnPlayerVerified(VerifiedEventArgs ev)
+        {
+            Log.Debug("Player joined, sending settings.");
+            ServerSpecificSettingsSync.SendToPlayer(ev.Player.ReferenceHub);
         }
     }
 }
