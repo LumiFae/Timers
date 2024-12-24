@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Waves;
 using PlayerRoles;
@@ -13,6 +14,13 @@ namespace Timers
 {
     public class Plugin: Plugin<Config, Translation>
     {
+        public override string Name => "Timers";
+        public override string Author => "JayXTQ";
+        public override string Prefix => "Timers";
+        public override Version Version => new (1, 0, 0);
+        public override Version RequiredExiledVersion => new (9, 0, 0);
+        public override PluginPriority Priority => PluginPriority.Default;
+        
         public static Plugin Instance { private set; get; }
 
         private Events _events;
