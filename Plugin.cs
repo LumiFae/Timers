@@ -4,7 +4,6 @@ using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Core.UserSettings;
 using Exiled.API.Features.Waves;
-using HintServiceMeow.Core.Models.HintContent.HintContent;
 using PlayerRoles;
 using Respawning;
 #if RUEI
@@ -13,6 +12,8 @@ using RueI.Displays;
 using RueI.Elements;
 using RueI.Extensions.HintBuilding;
 using RueI.Parsing.Enums;
+#else
+using HintServiceMeow.Core.Models.HintContent.HintContent;
 #endif
 using UserSettings.ServerSpecific;
 

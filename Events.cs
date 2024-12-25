@@ -1,8 +1,8 @@
 ﻿using Exiled.API.Features.Waves;
 using Exiled.Events.EventArgs.Player;
+#if HSM
 using HintServiceMeow.Core.Enum;
 using HintServiceMeow.Core.Models.HintContent.HintContent;
-#if HSM
 using HintServiceMeow.Core.Models.Hints;
 using HintServiceMeow.Core.Utilities;
 #endif
