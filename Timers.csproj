@@ -7,6 +7,9 @@
         <PlatformTarget>x64</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+        <Configuration>RUEI;HSM</Configuration>
+        <Configurations>RUEI;HSM</Configurations>
+        <Platforms>AnyCPU</Platforms>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(EXILED_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="false" />
@@ -15,9 +18,10 @@
         <Reference Include="UnityEngine" HintPath="$(EXILED_REFERENCES)\UnityEngine.dll" Private="false" />
         <Reference Include="UnityEngine.CoreModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
+        <Reference Include="HintServiceMeow-Exiled" Condition=" '$(Configuration)' == 'HSM' " HintPath="$(EXILED_REFERENCES)\HintServiceMeow-Exiled.dll" Private="false" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="ExMod.Exiled" Version="9.0.1" />
-        <PackageReference Include="RueI" Version="2.1.0" />
+        <PackageReference Condition=" '$(Configuration)' == 'RUEI' " Include="RueI" Version="2.1.0" />
     </ItemGroup>
 </Project>

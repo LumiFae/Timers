@@ -1,15 +1,19 @@
-﻿using System.Text;
+﻿using System.Drawing;
+using System.Text;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Core.UserSettings;
 using Exiled.API.Features.Waves;
+using HintServiceMeow.Core.Models.HintContent.HintContent;
 using PlayerRoles;
 using Respawning;
+#if RUEI
 using RueI;
 using RueI.Displays;
 using RueI.Elements;
 using RueI.Extensions.HintBuilding;
 using RueI.Parsing.Enums;
+#endif
 using UserSettings.ServerSpecific;
 
 namespace Timers
@@ -26,8 +30,10 @@ namespace Timers
         public static Plugin Instance { private set; get; }
 
         private Events _events;
-
+        
+#if RUEI
         internal AutoElement RespawnTimerDisplay { private set; get; }
+#endif
 
         internal TimedWave NtfWave;
         internal TimedWave NtfMiniWave;
@@ -36,18 +42,21 @@ namespace Timers
         
         public override void OnEnabled()
         {
+#if RUEI
             RueIMain.EnsureInit();
+#endif
             Instance = this;
 
             _events = new();
 
             Exiled.Events.Handlers.Server.RoundStarted += _events.OnRoundStart;
             Exiled.Events.Handlers.Player.Verified += _events.OnPlayerVerified;
-            
+#if RUEI
             RespawnTimerDisplay = new(Roles.Spectator, new DynamicElement(GetTimers, 910))
             {
                 UpdateEvery = new (TimeSpan.FromSeconds(1))
             };
+#endif
 
             HeaderSetting header = new(Translation.ServerSpecificSettingHeading);
             IEnumerable<SettingBase> settings = new SettingBase[]
@@ -95,21 +104,60 @@ namespace Timers
                 .Replace("{seconds}", timer.Seconds.ToString("D2"));
         }
         
-        private string GetTimers(DisplayCore core)
+        public static string ConvertToHex(Color color)
         {
+            string alphaInclude = color.A switch
+            {
+                255 => string.Empty,
+                _ => color.A.ToString("X2")
+            };
+
+            return $"#{color.R:X2}{color.G:X2}{color.B:X2}{alphaInclude}";
+        }
+        
+#if RUEI
+        internal string GetTimers(DisplayCore core)
+#else
+        internal string GetTimers(ReferenceHub player)
+#endif
+        {
+#if HSM
+            if(!Round.InProgress) 
+                return "";
+            if(Player.TryGet(player, out Player p) && p.Role.Type != RoleTypeId.Spectator)
+            {
+                return "";
+            }
+#endif
+            
             TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
-
-            SSTwoButtonsSetting setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(core.Hub, Config.ServerSpecificSettingId);
+            SSTwoButtonsSetting setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(
+#if RUEI
+                core.Hub,
+#else
+                player,
+#endif
+                Config.ServerSpecificSettingId
+            );
+            
             
             if(setting.SyncIsB) return "";
 
             StringBuilder builder = new StringBuilder()
+#if RUEI
                 .SetAlignment(HintBuilding.AlignStyle.Center);
+#else
+                .Append("<align=center>");
+#endif
 
             if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationStaff)
             {
+#if RUEI
                 builder.SetColor(Config.NtfSpawnColor).Append(TimerText(ntfTime)).CloseColor();
+#else
+                builder.Append($"<color={ConvertToHex(Config.NtfSpawnColor)}>").Append(TimerText(ntfTime)).Append("</color>");
+#endif
             }
             else
             {
@@ -117,16 +165,29 @@ namespace Timers
             }
             
             builder
+#if RUEI
                 .AddSpace(Config.SpaceBetweenTimers, MeasurementUnit.Ems);
+#else
+                .Append($"<space={Config.SpaceBetweenTimers}ems>");
+#endif
+            
 
             if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationEnemy)
             {
+#if RUEI
                 builder.SetColor(Config.ChaosSpawnColor).Append(TimerText(chaosTime)).CloseColor();
+#else
+                builder.Append($"<color={ConvertToHex(Config.ChaosSpawnColor)}>").Append(TimerText(chaosTime)).Append("</color>");
+#endif
             }
             else
             {
                 builder.Append(TimerText(chaosTime));
             }
+            
+#if HSM
+            builder.Append("</align>");
+#endif
             
             return builder.ToString();
         }

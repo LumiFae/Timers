@@ -1,7 +1,11 @@
-﻿using Exiled.API.Features;
-using Exiled.API.Features.Waves;
+﻿using Exiled.API.Features.Waves;
 using Exiled.Events.EventArgs.Player;
-using GameCore;
+using HintServiceMeow.Core.Enum;
+using HintServiceMeow.Core.Models.HintContent.HintContent;
+#if HSM
+using HintServiceMeow.Core.Models.Hints;
+using HintServiceMeow.Core.Utilities;
+#endif
 using Respawning.Waves;
 using UserSettings.ServerSpecific;
 using Log = Exiled.API.Features.Log;
@@ -38,6 +42,19 @@ namespace Timers
         {
             Log.Debug("Player joined, sending settings.");
             ServerSpecificSettingsSync.SendToPlayer(ev.Player.ReferenceHub);
+#if HSM
+            PlayerDisplay playerDisplay = PlayerDisplay.Get(ev.Player);
+
+            DynamicHint hint = new()
+            {
+                AutoText = update => Plugin.Instance.GetTimers(update.Player),
+                TargetY = 105,
+                FontSize = 35,
+                SyncSpeed = HintSyncSpeed.Fast
+            };
+            
+            playerDisplay.AddHint(hint);
+#endif
         }
     }
 }
