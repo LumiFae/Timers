@@ -34,9 +34,9 @@ jobs:
       - name: Build HSM
         run: msbuild.exe ${{ github.workspace }}/Timers.sln /p:Configuration=HSM /p:Platform="Any CPU"
       - name: Rename RueI
-        run: Rename-Item -Path ${{ github.workspace }/bin/RUEI/net48/Timers.dll -NewName "Timers-RueI.dll"
+        run: Rename-Item -Path ${{ github.workspace }}/bin/RUEI/net48/Timers.dll -NewName "Timers-RueI.dll"
       - name: Rename HSM
-        run: Rename-Item -Path ${{ github.workspace }/bin/HSM/net48/Timers.dll -NewName "Timers-HSM.dll"
+        run: Rename-Item -Path ${{ github.workspace }}/bin/HSM/net48/Timers.dll -NewName "Timers-HSM.dll"
       - name: Add RueI dll to release
         uses: actions/upload-release-asset@v1
         with:
