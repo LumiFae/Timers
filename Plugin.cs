@@ -148,19 +148,11 @@ namespace Timers
             if(setting.SyncIsB) return "";
 
             StringBuilder builder = new StringBuilder()
-#if RUEI
-                .SetAlignment(HintBuilding.AlignStyle.Center);
-#else
                 .Append("<align=center>");
-#endif
 
             if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationStaff)
             {
-#if RUEI
-                builder.SetColor(Config.NtfSpawnColor).Append(TimerText(ntfTime)).CloseColor();
-#else
                 builder.Append($"<color={ConvertToHex(Config.NtfSpawnColor)}>").Append(TimerText(ntfTime)).Append("</color>");
-#endif
             }
             else
             {
@@ -168,29 +160,18 @@ namespace Timers
             }
             
             builder
-#if RUEI
-                .AddSpace(Config.SpaceBetweenTimers, MeasurementUnit.Ems);
-#else
                 .Append($"<space={Config.SpaceBetweenTimers}ems>");
-#endif
             
-
             if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationEnemy)
             {
-#if RUEI
-                builder.SetColor(Config.ChaosSpawnColor).Append(TimerText(chaosTime)).CloseColor();
-#else
                 builder.Append($"<color={ConvertToHex(Config.ChaosSpawnColor)}>").Append(TimerText(chaosTime)).Append("</color>");
-#endif
             }
             else
             {
                 builder.Append(TimerText(chaosTime));
             }
             
-#if HSM
             builder.Append("</align>");
-#endif
             
             return builder.ToString();
         }
