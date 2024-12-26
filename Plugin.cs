@@ -132,7 +132,9 @@ namespace Timers
 #endif
             
             TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
+            if(ntfTime < TimeSpan.Zero) ntfTime = TimeSpan.Zero;
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
+            if(chaosTime < TimeSpan.Zero) chaosTime = TimeSpan.Zero;
             SSTwoButtonsSetting setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(
 #if RUEI
                 core.Hub,
