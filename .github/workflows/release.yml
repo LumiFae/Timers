@@ -33,7 +33,7 @@ jobs:
       - name: Restore packages
         run: nuget restore ${{ github.workspace }}/Timers.sln
       - name: Build RueI
-        run: msbuild.exe ${{ github.workspace }}/Timers.sln /p:Configuration=RUEI /p:Platform=RUEI
+        run: msbuild.exe ${{ github.workspace }}/Timers.sln /p:Configuration=RUEI /p:Platform=AnyCPU
       - name: Get HSM Resources
         shell: pwsh
         run: |
@@ -42,7 +42,7 @@ jobs:
           $url = $asset.browser_download_url
           Invoke-WebRequest -Uri $url -OutFile ${{ env.EXILED_REFERENCES }}/HintServiceMeow-Exiled.dll
       - name: Build HSM
-        run: msbuild.exe ${{ github.workspace }}/Timers.sln /p:Configuration=HSM /p:Platform=HSM
+        run: msbuild.exe ${{ github.workspace }}/Timers.sln /p:Configuration=HSM /p:Platform=AnyCPU
       - name: Rename Timers.dll to Timers-RueI.dll
         run: Rename-Item -Path ${{ github.workspace }}/bin/RUEI/Timers.dll -NewName Timers-RueI.dll
       - name: Rename Timers.dll to Timers-HSM.dll
