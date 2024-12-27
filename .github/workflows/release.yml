@@ -7,6 +7,7 @@ on:
 env:
   EXILED_REFERENCES_URL: https://misaka-zerotwo.github.io/SL-References/Dev.zip
   EXILED_REFERENCES: ${{ github.workspace }}/refs
+  HSM_URL: https://api.github.com/repos/MeowServer/HintServiceMeow/releases
 
 permissions: 
   contents: write
@@ -33,6 +34,13 @@ jobs:
         run: nuget restore ${{ github.workspace }}/Timers.sln
       - name: Build RueI
         run: msbuild.exe ${{ github.workspace }}/Timers.sln /p:Configuration=RUEI /p:Platform="Any CPU"
+      - name: Get HSM Resources
+        shell: pwsh
+        run: |
+          $response = Invoke-RestMethod -Uri ${{ env.HSM_URL }}
+          $asset = $response.assets | Where-Object { $_.name -eq 'HintServiceMeow-Exiled.dll' } | Select-Object -First 1
+          $url = $asset.browser_download_url
+          Invoke-WebRequest -Uri $url -OutFile ${{ env.EXILED_REFERENCES }}/HintServiceMeow-Exiled.dll
       - name: Build HSM
         run: msbuild.exe ${{ github.workspace }}/Timers.sln /p:Configuration=HSM /p:Platform="Any CPU"
       - name: Rename Timers.dll to Timers-RueI.dll
