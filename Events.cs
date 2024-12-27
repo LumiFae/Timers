@@ -2,7 +2,6 @@
 using Exiled.Events.EventArgs.Player;
 #if HSM
 using HintServiceMeow.Core.Enum;
-using HintServiceMeow.Core.Models.HintContent.HintContent;
 using HintServiceMeow.Core.Models.Hints;
 using HintServiceMeow.Core.Utilities;
 #endif

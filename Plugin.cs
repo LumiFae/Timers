@@ -10,10 +10,6 @@ using Respawning;
 using RueI;
 using RueI.Displays;
 using RueI.Elements;
-using RueI.Extensions.HintBuilding;
-using RueI.Parsing.Enums;
-#else
-using HintServiceMeow.Core.Models.HintContent.HintContent;
 #endif
 using UserSettings.ServerSpecific;
 
@@ -24,7 +20,7 @@ namespace Timers
         public override string Name => "Timers";
         public override string Author => "LumiFae";
         public override string Prefix => "Timers";
-        public override Version Version => new (1, 1, 0);
+        public override Version Version => new (1, 2, 0);
         public override Version RequiredExiledVersion => new (9, 0, 0);
         public override PluginPriority Priority => PluginPriority.Default;
         
@@ -53,7 +49,7 @@ namespace Timers
             Exiled.Events.Handlers.Server.RoundStarted += _events.OnRoundStart;
             Exiled.Events.Handlers.Player.Verified += _events.OnPlayerVerified;
 #if RUEI
-            RespawnTimerDisplay = new(Roles.Spectator, new DynamicElement(GetTimers, 910))
+            RespawnTimerDisplay = new (Roles.Spectator | Roles.Overwatch, new DynamicElement(GetTimers, 910))
             {
                 UpdateEvery = new (TimeSpan.FromSeconds(1))
             };
@@ -125,7 +121,7 @@ namespace Timers
 #if HSM
             if(!Round.InProgress) 
                 return "";
-            if(Player.TryGet(player, out Player p) && p.Role.Type != RoleTypeId.Spectator)
+            if(Player.TryGet(player, out Player p) && p.Role.Type is not RoleTypeId.Spectator and not RoleTypeId.Overwatch)
             {
                 return "";
             }
