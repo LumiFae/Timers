@@ -46,7 +46,7 @@ namespace Timers
 
             DynamicHint hint = new()
             {
-                AutoText = update => Plugin.Instance.GetTimers(update.Player),
+                AutoText = update => Plugin.Instance.GetTimers(update),
                 TargetY = 105,
                 FontSize = 35,
                 SyncSpeed = HintSyncSpeed.Fast

@@ -1,9 +1,9 @@
-﻿using System.Drawing;
-using System.Text;
+﻿using System.Text;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Core.UserSettings;
 using Exiled.API.Features.Waves;
+using HintServiceMeow.Core.Models.Hints;
 using PlayerRoles;
 using Respawning;
 #if RUEI
@@ -12,6 +12,7 @@ using RueI.Displays;
 using RueI.Elements;
 #endif
 using UserSettings.ServerSpecific;
+using Color = System.Drawing.Color;
 
 namespace Timers
 {
@@ -115,13 +116,13 @@ namespace Timers
 #if RUEI
         internal string GetTimers(DisplayCore core)
 #else
-        internal string GetTimers(ReferenceHub player)
+        internal string GetTimers(AbstractHint.TextUpdateArg arg)
 #endif
         {
 #if HSM
             if(!Round.InProgress) 
                 return "";
-            if(Player.TryGet(player, out Player p) && p.Role.Type is not RoleTypeId.Spectator and not RoleTypeId.Overwatch)
+            if(Player.TryGet(arg.Player, out Player p) && p.Role.Type is not RoleTypeId.Spectator and not RoleTypeId.Overwatch)
             {
                 return "";
             }
@@ -135,7 +136,7 @@ namespace Timers
 #if RUEI
                 core.Hub,
 #else
-                player,
+                arg.Player,
 #endif
                 Config.ServerSpecificSettingId
             );
