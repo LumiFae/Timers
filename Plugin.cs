@@ -3,13 +3,14 @@ using Exiled.API.Enums;
 using Exiled.API.Features;
 using Exiled.API.Features.Core.UserSettings;
 using Exiled.API.Features.Waves;
-using HintServiceMeow.Core.Models.Hints;
 using PlayerRoles;
 using Respawning;
 #if RUEI
 using RueI;
 using RueI.Displays;
 using RueI.Elements;
+#else
+using HintServiceMeow.Core.Models.Hints;
 #endif
 using UserSettings.ServerSpecific;
 using Color = System.Drawing.Color;
