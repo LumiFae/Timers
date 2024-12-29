@@ -1,4 +1,4 @@
-﻿# Timers
+﻿# Timers ![Downloads](https://img.shields.io/github/downloads/LumiFae/Timers/total)
 
 A simple EXILED plugin that adds spawn timers below each spawn bar in the Spectator UI.
 
