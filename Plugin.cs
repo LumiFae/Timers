@@ -23,7 +23,7 @@ namespace Timers
         public override string Author => "LumiFae";
         public override string Prefix => "Timers";
         public override Version Version => new (1, 3, 1);
-        public override Version RequiredExiledVersion => new (9, 0, 0);
+        public override Version RequiredExiledVersion => new (9, 2, 1);
         public override PluginPriority Priority => PluginPriority.Default;
         
         public static Plugin Instance { private set; get; }
@@ -103,7 +103,7 @@ namespace Timers
                 .Replace("{seconds}", timer.Seconds.ToString("D2"));
         }
         
-        public static string ConvertToHex(Color color)
+        private static string ConvertToHex(Color color)
         {
             string alphaInclude = color.A switch
             {
