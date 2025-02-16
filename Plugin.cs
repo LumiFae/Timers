@@ -11,6 +11,7 @@ using RueI.Displays;
 using RueI.Elements;
 #else
 using HintServiceMeow.Core.Models.Hints;
+using HintServiceMeow.Core.Enum;
 #endif
 using UserSettings.ServerSpecific;
 using Color = System.Drawing.Color;
@@ -32,6 +33,8 @@ namespace Timers
         
 #if RUEI
         internal AutoElement RespawnTimerDisplay { private set; get; }
+#else
+        internal DynamicHint RespawnTimerDisplay { private set; get; }
 #endif
 
         internal TimedWave NtfWave;
@@ -55,6 +58,15 @@ namespace Timers
             {
                 UpdateEvery = new (TimeSpan.FromSeconds(1))
             };
+#else
+            Exiled.Events.Handlers.Player.ChangingRole += _events.OnPlayerChangingRole;
+            RespawnTimerDisplay = new()
+            {
+                AutoText = GetTimers,
+                TargetY = 105,
+                FontSize = 35,
+                SyncSpeed = HintSyncSpeed.Fast
+            };
 #endif
 
             HeaderSetting header = new(Translation.ServerSpecificSettingHeading);
@@ -75,6 +87,9 @@ namespace Timers
         {
             Exiled.Events.Handlers.Server.RoundStarted -= _events.OnRoundStart;
             Exiled.Events.Handlers.Player.Verified -= _events.OnPlayerVerified;
+#if HSM
+            Exiled.Events.Handlers.Player.ChangingRole -= _events.OnPlayerChangingRole;
+#endif
             _events = null;
             base.OnDisabled();
         }
@@ -120,15 +135,6 @@ namespace Timers
         internal string GetTimers(AbstractHint.TextUpdateArg arg)
 #endif
         {
-#if HSM
-            if(!Round.InProgress) 
-                return "";
-            if(Player.TryGet(arg.Player, out Player p) && p.Role.Type is not RoleTypeId.Spectator and not RoleTypeId.Overwatch)
-            {
-                return "";
-            }
-#endif
-            
             TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             if(ntfTime < TimeSpan.Zero) ntfTime = TimeSpan.Zero;
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);

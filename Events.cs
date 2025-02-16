@@ -1,9 +1,9 @@
 ﻿using Exiled.API.Features.Waves;
 using Exiled.Events.EventArgs.Player;
 #if HSM
-using HintServiceMeow.Core.Enum;
-using HintServiceMeow.Core.Models.Hints;
+using Exiled.API.Features;
 using HintServiceMeow.Core.Utilities;
+using PlayerRoles;
 #endif
 using Respawning.Waves;
 using UserSettings.ServerSpecific;
@@ -41,19 +41,26 @@ namespace Timers
         {
             Log.Debug("Player joined, sending settings.");
             ServerSpecificSettingsSync.SendToPlayer(ev.Player.ReferenceHub);
-#if HSM
-            PlayerDisplay playerDisplay = PlayerDisplay.Get(ev.Player);
-
-            DynamicHint hint = new()
-            {
-                AutoText = update => Plugin.Instance.GetTimers(update),
-                TargetY = 105,
-                FontSize = 35,
-                SyncSpeed = HintSyncSpeed.Fast
-            };
-            
-            playerDisplay.AddHint(hint);
-#endif
         }
+        
+#if HSM
+        private bool CanSendHint(RoleTypeId id)
+        {
+            return id is RoleTypeId.Spectator or RoleTypeId.Overwatch;
+        }
+        
+        public void OnPlayerChangingRole(ChangingRoleEventArgs ev)
+        {
+            bool willSendHint = CanSendHint(ev.NewRole);
+            bool currentlySendingHint = CanSendHint(ev.Player.Role.Type);
+
+            if (willSendHint == currentlySendingHint) return;
+            PlayerDisplay display = PlayerDisplay.Get(ev.Player);
+            if (willSendHint && display.GetHint(Plugin.Instance.RespawnTimerDisplay.Guid) == null)
+                display.AddHint(Plugin.Instance.RespawnTimerDisplay);
+            else
+                display.RemoveHint(Plugin.Instance.RespawnTimerDisplay);
+        }
+#endif
     }
 }
