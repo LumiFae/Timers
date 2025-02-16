@@ -23,7 +23,7 @@ namespace Timers
         public override string Name => "Timers";
         public override string Author => "LumiFae";
         public override string Prefix => "Timers";
-        public override Version Version => new (1, 3, 1);
+        public override Version Version => new (1, 3, 2);
         public override Version RequiredExiledVersion => new (9, 2, 1);
         public override PluginPriority Priority => PluginPriority.Default;
         
