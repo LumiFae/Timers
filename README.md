@@ -10,6 +10,10 @@ Dependencies:
 
 EXILED (v9 required)
 
+### Timers is breaking on the 2nd round?
+
+RueI may be the cause, it has issues with these 2 plugins from what I've seen, in this case though you can use HSM.
+
 ## Download
 
 You can download the latest release from the [releases](https://github.com/LumiFae/Timers/releases/latest) page.
@@ -21,3 +25,7 @@ If you are using neither, I recommend RueI, but you will have to download the Ru
 Put the downloaded plugin file inside your EXILED/Plugins folder, and if using RueI, then put the RueI.dll inside EXILED/Plugins/dependencies.
 
 Restart your server, change config values (if needed) and you're good to go!
+
+## Support
+
+Need support? Join my Discord: https://discord.gg/4XGASxrN
