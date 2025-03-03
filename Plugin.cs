@@ -54,7 +54,7 @@ namespace Timers
             Exiled.Events.Handlers.Server.RoundStarted += _events.OnRoundStart;
             Exiled.Events.Handlers.Player.Verified += _events.OnPlayerVerified;
 #if RUEI
-            RespawnTimerDisplay = new (Roles.Spectator | Roles.Overwatch, new DynamicElement(GetTimers, 910))
+            RespawnTimerDisplay = new (Roles.Spectator | Roles.Overwatch, new DynamicElement(core => GetTimers(core.Hub), 910))
             {
                 UpdateEvery = new (TimeSpan.FromSeconds(1))
             };
@@ -62,7 +62,7 @@ namespace Timers
             Exiled.Events.Handlers.Player.ChangingRole += _events.OnPlayerChangingRole;
             RespawnTimerDisplay = new()
             {
-                AutoText = GetTimers,
+                AutoText = arg => GetTimers(arg.Player),
                 TargetY = 105,
                 FontSize = 35,
                 SyncSpeed = HintSyncSpeed.Fast
@@ -129,25 +129,15 @@ namespace Timers
             return $"#{color.R:X2}{color.G:X2}{color.B:X2}{alphaInclude}";
         }
         
-#if RUEI
-        internal string GetTimers(DisplayCore core)
-#else
-        internal string GetTimers(AbstractHint.TextUpdateArg arg)
-#endif
+        private string GetTimers(ReferenceHub hub)
         {
             TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             if(ntfTime < TimeSpan.Zero) ntfTime = TimeSpan.Zero;
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
             if(chaosTime < TimeSpan.Zero) chaosTime = TimeSpan.Zero;
-            SSTwoButtonsSetting setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(
-#if RUEI
-                core.Hub,
-#else
-                arg.Player,
-#endif
-                Config.ServerSpecificSettingId
-            );
-            
+                
+            if (hub.gameObject == null) return "";
+            SSTwoButtonsSetting setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(hub, Config.ServerSpecificSettingId);
             
             if(setting.SyncIsB) return "";
 
