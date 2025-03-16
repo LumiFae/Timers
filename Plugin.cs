@@ -131,6 +131,7 @@ namespace Timers
         
         private string GetTimers(ReferenceHub hub)
         {
+            if (!Round.IsStarted) return string.Empty;
             var ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             if(ntfTime < TimeSpan.Zero) ntfTime = TimeSpan.Zero;
             var chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
