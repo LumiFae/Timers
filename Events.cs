@@ -1,7 +1,6 @@
 ﻿using Exiled.API.Features.Waves;
 using Exiled.Events.EventArgs.Player;
 #if HSM
-using Exiled.API.Features;
 using HintServiceMeow.Core.Utilities;
 using PlayerRoles;
 #endif
@@ -15,22 +14,25 @@ namespace Timers
     {
         public void OnRoundStart()
         {
-            if (TimedWave.TryGetTimedWave<NtfSpawnWave>(out TimedWave ntfWave))
+            if (TimedWave.TryGetTimedWave<NtfSpawnWave>(out var ntfWave))
             {
                 Log.Debug("NtfWave found");
                 Plugin.Instance.NtfWave = ntfWave;
             }
-            if (TimedWave.TryGetTimedWave<NtfMiniWave>(out TimedWave ntfMiniWave))
+            
+            if (TimedWave.TryGetTimedWave<NtfMiniWave>(out var ntfMiniWave))
             {
                 Log.Debug("NtfMiniWave found");
                 Plugin.Instance.NtfMiniWave = ntfMiniWave;
             }
-            if (TimedWave.TryGetTimedWave<ChaosSpawnWave>(out TimedWave chaosWave))
+            
+            if (TimedWave.TryGetTimedWave<ChaosSpawnWave>(out var chaosWave))
             {
                 Log.Debug("ChaosWave found");
                 Plugin.Instance.ChaosWave = chaosWave;
             }
-            if (TimedWave.TryGetTimedWave<ChaosMiniWave>(out TimedWave chaosMiniWave))
+            
+            if (TimedWave.TryGetTimedWave<ChaosMiniWave>(out var chaosMiniWave))
             {
                 Log.Debug("ChaosMiniWave found");
                 Plugin.Instance.ChaosMiniWave = chaosMiniWave;
@@ -51,11 +53,11 @@ namespace Timers
         
         public void OnPlayerChangingRole(ChangingRoleEventArgs ev)
         {
-            bool willSendHint = CanSendHint(ev.NewRole);
-            bool currentlySendingHint = CanSendHint(ev.Player.Role.Type);
+            var willSendHint = CanSendHint(ev.NewRole);
+            var currentlySendingHint = CanSendHint(ev.Player.Role.Type);
 
             if (willSendHint == currentlySendingHint) return;
-            PlayerDisplay display = PlayerDisplay.Get(ev.Player);
+            var display = PlayerDisplay.Get(ev.Player);
             if (willSendHint && display.GetHint(Plugin.Instance.RespawnTimerDisplay.Guid) == null)
                 display.AddHint(Plugin.Instance.RespawnTimerDisplay);
             else

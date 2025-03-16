@@ -21,10 +21,10 @@ namespace Timers
     public class Plugin: Plugin<Config, Translation>
     {
         public override string Name => "Timers";
-        public override string Author => "LumiFae";
+        public override string Author => "LumiFae. Modified by InfernalBreach Team";
         public override string Prefix => "Timers";
         public override Version Version => new (1, 3, 2);
-        public override Version RequiredExiledVersion => new (9, 2, 1);
+        public override Version RequiredExiledVersion => new (9, 5, 1);
         public override PluginPriority Priority => PluginPriority.Default;
         
         public static Plugin Instance { private set; get; }
@@ -49,7 +49,7 @@ namespace Timers
 #endif
             Instance = this;
 
-            _events = new();
+            _events = new Events();
 
             Exiled.Events.Handlers.Server.RoundStarted += _events.OnRoundStart;
             Exiled.Events.Handlers.Player.Verified += _events.OnPlayerVerified;
@@ -60,7 +60,7 @@ namespace Timers
             };
 #else
             Exiled.Events.Handlers.Player.ChangingRole += _events.OnPlayerChangingRole;
-            RespawnTimerDisplay = new()
+            RespawnTimerDisplay = new DynamicHint
             {
                 AutoText = arg => GetTimers(arg.Player),
                 TargetY = 105,
@@ -70,12 +70,12 @@ namespace Timers
 #endif
 
             HeaderSetting header = new(Translation.ServerSpecificSettingHeading);
-            IEnumerable<SettingBase> settings = new SettingBase[]
-            {
+            IEnumerable<SettingBase> settings =
+            [
                 header,
                 new TwoButtonsSetting(Config.ServerSpecificSettingId, Translation.OverlaySettingText,
                     Translation.Enable, Translation.Disable, hintDescription: Translation.OverlaySettingHint)
-            };
+            ];
 
             SettingBase.Register(settings);
             SettingBase.SendToAll();
@@ -114,13 +114,13 @@ namespace Timers
 
         private string TimerText(TimeSpan timer)
         {
-            return Translation.Timer.Replace("{minutes}", timer.Minutes.ToString("D1"))
+            return Translation.Timer.Replace("{minutes}", timer.Minutes.ToString("D2"))
                 .Replace("{seconds}", timer.Seconds.ToString("D2"));
         }
         
         private static string ConvertToHex(Color color)
         {
-            string alphaInclude = color.A switch
+            var alphaInclude = color.A switch
             {
                 255 => string.Empty,
                 _ => color.A.ToString("X2")
@@ -131,22 +131,25 @@ namespace Timers
         
         private string GetTimers(ReferenceHub hub)
         {
-            TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
+            var ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             if(ntfTime < TimeSpan.Zero) ntfTime = TimeSpan.Zero;
-            TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
+            var chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
             if(chaosTime < TimeSpan.Zero) chaosTime = TimeSpan.Zero;
                 
-            if (hub.gameObject == null) return "";
-            SSTwoButtonsSetting setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(hub, Config.ServerSpecificSettingId);
+            if (hub.gameObject == null) return string.Empty;
+            var setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(hub, Config.ServerSpecificSettingId);
             
-            if(setting.SyncIsB) return "";
+            if(setting.SyncIsB) return string.Empty;
 
-            StringBuilder builder = new StringBuilder()
-                .Append("<align=center>");
+            var builder = new StringBuilder().Append("<align=center>");
 
             if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationStaff)
             {
                 builder.Append($"<color={ConvertToHex(Config.NtfSpawnColor)}>").Append(TimerText(ntfTime)).Append("</color>");
+            }
+            else if (!NtfWave.Timer.IsRespawnable && !NtfMiniWave.Timer.IsRespawnable)
+            {
+                builder.Append($"<color=red>").Append(TimerText(ntfTime)).Append("</color>");
             }
             else
             {
@@ -159,6 +162,10 @@ namespace Timers
             if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationEnemy)
             {
                 builder.Append($"<color={ConvertToHex(Config.ChaosSpawnColor)}>").Append(TimerText(chaosTime)).Append("</color>");
+            }
+            else if (!ChaosWave.Timer.IsRespawnable && !ChaosMiniWave.Timer.IsRespawnable)
+            {
+                builder.Append($"<color=red>").Append(TimerText(chaosTime)).Append("</color>");
             }
             else
             {
