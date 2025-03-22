@@ -9,6 +9,7 @@ namespace Timers
         public string OverlaySettingText { get; set; } = "Show Respawn Timers";
         public string Enable { get; set; } = "Enable";
         public string Disable { get; set; } = "Disable";
-        public string OverlaySettingHint { get; set; } = "Enables or disables the timers below the respawn bars, can't use the in-game setting for this due to the way it's implemented.";
+        public string OverlaySettingHint { get; set; } =
+            "Enables or disables the timers below the respawn bars, can't use the in-game setting for this due to the way it's implemented.";
     }
 }

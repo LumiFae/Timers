@@ -18,11 +18,14 @@ RueI may be the cause, it has issues with these 2 plugins from what I've seen, i
 
 You can download the latest release from the [releases](https://github.com/LumiFae/Timers/releases/latest) page.
 
-Decide which version of Timers you are using, if you are using RueI, then use Timers-RueI.dll. If you are using HintServiceMeow then use Timers-HSM.dll.
+Decide which version of Timers you are using, if you are using RueI, then use Timers-RueI.dll. If you are using
+HintServiceMeow then use Timers-HSM.dll.
 
-If you are using neither, I recommend RueI, but you will have to download the RueI.dll dependency from the repository, unless it's not there then you'll have to find it yourself.
+If you are using neither, I recommend RueI, but you will have to download the RueI.dll dependency from the repository,
+unless it's not there then you'll have to find it yourself.
 
-Put the downloaded plugin file inside your EXILED/Plugins folder, and if using RueI, then put the RueI.dll inside EXILED/Plugins/dependencies.
+Put the downloaded plugin file inside your EXILED/Plugins folder, and if using RueI, then put the RueI.dll inside
+EXILED/Plugins/dependencies.
 
 Restart your server, change config values (if needed) and you're good to go!
 
