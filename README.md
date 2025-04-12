@@ -21,7 +21,7 @@ You can download the latest release from the [releases](https://github.com/LumiF
 Decide which version of Timers you are using, if you are using RueI, then use Timers-RueI.dll. If you are using
 HintServiceMeow then use Timers-HSM.dll.
 
-If you are using neither, I recommend RueI, if you don't already have RueI on your server installed, you can get it from [here](https://github.com/pawslee/RueI/releases/latest), download the latest release and put it in the dependencies folder.
+If you are using neither, I recommend RueI, if you don't already have RueI on your server installed, you can get it from [here](https://github.com/pawslee/RueI/releases/latest).
 
 Put the downloaded plugin file inside your EXILED/Plugins folder, and if using RueI, then put the RueI.dll inside
 EXILED/Plugins/dependencies.
