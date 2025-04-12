@@ -12,7 +12,7 @@ EXILED (v9 required)
 
 ### Timers is breaking on the 2nd round?
 
-RueI may be the cause, it has issues with these 2 plugins from what I've seen, in this case though you can use HSM.
+RueI may be the cause, it has issues with 2 very common plugins from what I've seen, in this case though you can use HSM.
 
 ## Download
 
