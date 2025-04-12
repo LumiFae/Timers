@@ -101,7 +101,9 @@ namespace Timers
             StringBuilder builder = new StringBuilder()
                 .Append("<align=center>");
 
-            if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationStaff)
+            if (WaveManager._nextWave != null
+                && WaveManager._nextWave.TargetFaction == Faction.FoundationStaff
+                && ntfTime.TotalSeconds <= 18)
                 builder.Append($"<color={ConvertToHex(Config.NtfSpawnColor)}>").Append(TimerText(ntfTime)).Append("</color>");
             else
                 builder.Append(TimerText(ntfTime));
@@ -109,7 +111,9 @@ namespace Timers
             builder
                 .Append($"<space={Config.SpaceBetweenTimers}ems>");
 
-            if (WaveManager._nextWave != null && WaveManager._nextWave.TargetFaction == Faction.FoundationEnemy)
+            if (WaveManager._nextWave != null
+                && WaveManager._nextWave.TargetFaction == Faction.FoundationEnemy
+                && chaosTime.TotalSeconds <= 13)
                 builder.Append($"<color={ConvertToHex(Config.ChaosSpawnColor)}>").Append(TimerText(chaosTime)).Append("</color>");
             else
                 builder.Append(TimerText(chaosTime));
