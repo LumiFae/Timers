@@ -12,7 +12,7 @@ EXILED (v9 required)
 
 ### Timers is breaking on the 2nd round?
 
-RueI may be the cause, it has issues with 2 very common plugins from what I've seen, in this case though you can use HSM.
+RueI may be the cause, it has issues with 2 very common plugins from what I've seen, in this case though you can use HSM, which doesn't go in the dependencies folder, but the plugins folder, you can download HSM from [here](https://github.com/MeowServer/HintServiceMeow/releases/latest).
 
 ## Download
 
@@ -21,8 +21,7 @@ You can download the latest release from the [releases](https://github.com/LumiF
 Decide which version of Timers you are using, if you are using RueI, then use Timers-RueI.dll. If you are using
 HintServiceMeow then use Timers-HSM.dll.
 
-If you are using neither, I recommend RueI, but you will have to download the RueI.dll dependency from the repository,
-unless it's not there then you'll have to find it yourself.
+If you are using neither, I recommend RueI, if you don't already have RueI on your server installed, you can get it from [here](https://github.com/pawslee/RueI/releases/latest), download the latest release and put it in the dependencies folder.
 
 Put the downloaded plugin file inside your EXILED/Plugins folder, and if using RueI, then put the RueI.dll inside
 EXILED/Plugins/dependencies.
