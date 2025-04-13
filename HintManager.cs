@@ -8,6 +8,7 @@ using RueI.Elements;
 #endif
 using System.Drawing;
 using System.Text;
+using Exiled.API.Features;
 using Exiled.API.Features.Waves;
 using PlayerRoles;
 using Respawning;
@@ -71,7 +72,7 @@ namespace Timers
 
         private string TimerText(TimeSpan timer)
         {
-            return Translation.Timer.Replace("{minutes}", timer.Minutes.ToString("D1"))
+            return Translation.Timer.Replace("{minutes}", timer.Minutes.ToString("D2"))
                 .Replace("{seconds}", timer.Seconds.ToString("D2"));
         }
 
@@ -88,6 +89,7 @@ namespace Timers
 
         private string GetTimers(ReferenceHub hub)
         {
+            if (!Round.IsStarted) return string.Empty;
             TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             if (ntfTime < TimeSpan.Zero) ntfTime = TimeSpan.Zero;
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
@@ -105,6 +107,10 @@ namespace Timers
                 && WaveManager._nextWave.TargetFaction == Faction.FoundationStaff
                 && ntfTime.TotalSeconds <= 18)
                 builder.Append($"<color={ConvertToHex(Config.NtfSpawnColor)}>").Append(TimerText(ntfTime)).Append("</color>");
+            else if (!NtfWave.Timer.IsRespawnable && !NtfMiniWave.Timer.IsRespawnable)
+            {
+                builder.Append($"<color=red>").Append(TimerText(ntfTime)).Append("</color>");
+            }
             else
                 builder.Append(TimerText(ntfTime));
 
@@ -115,6 +121,10 @@ namespace Timers
                 && WaveManager._nextWave.TargetFaction == Faction.FoundationEnemy
                 && chaosTime.TotalSeconds <= 13)
                 builder.Append($"<color={ConvertToHex(Config.ChaosSpawnColor)}>").Append(TimerText(chaosTime)).Append("</color>");
+            else if (!ChaosWave.Timer.IsRespawnable && !ChaosMiniWave.Timer.IsRespawnable)
+            {
+                builder.Append($"<color=red>").Append(TimerText(chaosTime)).Append("</color>");
+            }
             else
                 builder.Append(TimerText(chaosTime));
 
