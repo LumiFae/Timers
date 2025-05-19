@@ -24,7 +24,7 @@
         <Reference Include="HintServiceMeow-Exiled" Condition=" '$(Configuration)' == 'HSM' " HintPath="$(EXILED_REFERENCES)\HintServiceMeow-Exiled.dll" Private="false" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Include="ExMod.Exiled" Version="9.2.1" />
+        <PackageReference Include="ExMod.Exiled" Version="9.6.0" />
         <PackageReference Condition=" '$(Configuration)' == 'RUEI' " Include="RueI" Version="2.1.0" />
     </ItemGroup>
 </Project>

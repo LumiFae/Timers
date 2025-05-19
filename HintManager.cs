@@ -36,7 +36,7 @@ namespace Timers
 #else
             RespawnTimerDisplay = new()
             {
-                AutoText = arg => GetTimers(arg.Player),
+                AutoText = arg => GetTimers(arg.PlayerDisplay.ReferenceHub),
                 TargetY = 105,
                 FontSize = 35,
                 SyncSpeed = HintSyncSpeed.Fast
@@ -93,10 +93,17 @@ namespace Timers
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
             if (chaosTime < TimeSpan.Zero) chaosTime = TimeSpan.Zero;
 
-            if (hub?.gameObject == null) return "";
-            SSTwoButtonsSetting setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(hub, Config.ServerSpecificSettingId);
+            SSTwoButtonsSetting setting;
+            try
+            {
+                setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(hub, Config.ServerSpecificSettingId);
+            }
+            catch (NullReferenceException)
+            {
+                return string.Empty;
+            }
 
-            if (setting.SyncIsB) return "";
+            if (setting.SyncIsB) return string.Empty;
 
             StringBuilder builder = new StringBuilder()
                 .Append("<align=center>");
