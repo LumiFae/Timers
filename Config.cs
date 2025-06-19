@@ -1,10 +1,15 @@
 ﻿using System.ComponentModel;
 using System.Drawing;
+#if EXILED
 using Exiled.API.Interfaces;
+#endif
 
 namespace Timers
 {
-    public class Config : IConfig
+    public class Config 
+#if EXILED
+        : IConfig
+#endif
     {
         [Description("The color of the Chaos timer when Chaos are spawning.")]
         public Color ChaosSpawnColor = Color.Green;

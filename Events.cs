@@ -1,13 +1,12 @@
 ﻿#if HSM
-using Exiled.API.Features;
 using HintServiceMeow.Core.Utilities;
 using PlayerRoles;
 #endif
-using Exiled.API.Features.Waves;
-using Exiled.Events.EventArgs.Player;
+using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Features.Console;
+using Respawning;
 using Respawning.Waves;
 using UserSettings.ServerSpecific;
-using Log = Exiled.API.Features.Log;
 
 namespace Timers
 {
@@ -15,40 +14,41 @@ namespace Timers
     {
         public void OnRoundStart()
         {
-            if (TimedWave.TryGetTimedWave<NtfSpawnWave>(out TimedWave ntfWave))
+            if (WaveManager.TryGet(out NtfSpawnWave ntfWave))
             {
-                Log.Debug("NtfWave found");
+                Logger.Debug("NtfWave found", Plugin.Instance.Config.Debug);
                 HintManager.Instance.NtfWave = ntfWave;
             }
 
-            if (TimedWave.TryGetTimedWave<NtfMiniWave>(out TimedWave ntfMiniWave))
+            if (WaveManager.TryGet(out NtfMiniWave ntfMiniWave))
             {
-                Log.Debug("NtfMiniWave found");
+                Logger.Debug("NtfMiniWave found", Plugin.Instance.Config.Debug);
                 HintManager.Instance.NtfMiniWave = ntfMiniWave;
             }
 
-            if (TimedWave.TryGetTimedWave<ChaosSpawnWave>(out TimedWave chaosWave))
+            if (WaveManager.TryGet(out ChaosSpawnWave chaosWave))
             {
-                Log.Debug("ChaosWave found");
+                Logger.Debug("ChaosWave found", Plugin.Instance.Config.Debug);
                 HintManager.Instance.ChaosWave = chaosWave;
             }
 
-            if (TimedWave.TryGetTimedWave<ChaosMiniWave>(out TimedWave chaosMiniWave))
+            if (WaveManager.TryGet(out ChaosMiniWave chaosMiniWave))
             {
-                Log.Debug("ChaosMiniWave found");
+                Logger.Debug("ChaosMiniWave found", Plugin.Instance.Config.Debug);
                 HintManager.Instance.ChaosMiniWave = chaosMiniWave;
             }
         }
 
-        public void OnPlayerVerified(VerifiedEventArgs ev)
+        public void OnPlayerVerified(PlayerJoinedEventArgs ev)
         {
-            Log.Debug("Player joined, sending settings.");
+            Logger.Debug("Player joined, sending settings.", Plugin.Instance.Config.Debug);
             ServerSpecificSettingsSync.SendToPlayer(ev.Player.ReferenceHub);
         }
 
 #if HSM
-        public void OnLeft(LeftEventArgs ev)
+        public void OnLeft(PlayerLeftEventArgs ev)
         {
+            Logger.Debug("Player left, removing their hints, if any.", Plugin.Instance.Config.Debug);
             PlayerDisplay playerDisplay = PlayerDisplay.Get(ev.Player);
             if (playerDisplay?.GetHint(HintManager.Instance.RespawnTimerDisplay.Guid) == null) return;
             playerDisplay.RemoveHint(HintManager.Instance.RespawnTimerDisplay);
@@ -59,12 +59,14 @@ namespace Timers
             return id is RoleTypeId.Spectator or RoleTypeId.Overwatch;
         }
         
-        public void OnPlayerChangingRole(ChangingRoleEventArgs ev)
+        public void OnPlayerChangingRole(PlayerChangingRoleEventArgs ev)
         {
+            Logger.Debug("Player changing role, checking if valid roles for hints...", Plugin.Instance.Config.Debug);
             bool willSendHint = CanSendHint(ev.NewRole);
-            bool currentlySendingHint = CanSendHint(ev.Player.Role.Type);
+            bool currentlySendingHint = CanSendHint(ev.Player.Role);
 
             if (willSendHint == currentlySendingHint) return;
+            Logger.Debug("Player roles are valid, managing hint...", Plugin.Instance.Config.Debug);
             PlayerDisplay display = PlayerDisplay.Get(ev.Player);
             if (display == null) return;
             if (willSendHint && display.GetHint(HintManager.Instance.RespawnTimerDisplay.Guid) == null && ev.Player.ReferenceHub != null && ev.Player.ReferenceHub.gameObject != null)

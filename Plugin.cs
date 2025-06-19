@@ -1,70 +1,111 @@
-﻿using Exiled.API.Enums;
+﻿using LabApi.Events.Handlers;
+using LabApi.Features.Console;
+using UserSettings.ServerSpecific;
+#if EXILED
 using Exiled.API.Features;
-using Exiled.API.Features.Core.UserSettings;
-using Player = Exiled.Events.Handlers.Player;
-using Server = Exiled.Events.Handlers.Server;
-#if RUEI
-#else
-using HintServiceMeow.Core.Models.Hints;
-using HintServiceMeow.Core.Enum;
+#elif LabAPI
+using LabApi.Loader;
 #endif
 
 namespace Timers
 {
-    public class Plugin : Plugin<Config, Translation>
+    public class Plugin : 
+#if LabAPI
+        LabApi.Loader.Features.Plugins.Plugin
+#elif EXILED
+        Plugin<Config, Translation>
+#endif
     {
 
         private Events _events;
         private HintManager _hintManager;
         public override string Name => "Timers";
         public override string Author => "LumiFae";
-        public override string Prefix => "Timers";
         public override Version Version => new(1, 3, 3);
+        
+#if EXILED
         public override Version RequiredExiledVersion => new(9, 2, 1);
-        public override PluginPriority Priority => PluginPriority.Default;
+        public override string Prefix => "Timers";
+#elif LabAPI
+        public override string Description { get; } = "Adds countdown timers to the respawn UI";
+        public override Version RequiredApiVersion { get; } = new (1, 0, 2);
+#endif
 
         public static Plugin Instance { private set; get; }
+        
+#if LabAPI
+        public Translation Translation { get; private set; }
+        public Config Config { get; private set; }
+#endif
 
+        #if EXILED
         public override void OnEnabled()
+#elif LabAPI
+        public override void Enable()
+#endif
         {
+#if LabAPI
+            if (!Config.IsEnabled) return;
+#endif
+            Logger.Debug("Enabling plugin...", Config.Debug);
             Instance = this;
 
             _events = new();
             _hintManager = new();
             _hintManager.Initialise();
 
-            Server.RoundStarted += _events.OnRoundStart;
-            Player.Verified += _events.OnPlayerVerified;
+            ServerEvents.RoundStarted += _events.OnRoundStart;
+            PlayerEvents.Joined += _events.OnPlayerVerified;
 #if HSM
-            Exiled.Events.Handlers.Player.ChangingRole += _events.OnPlayerChangingRole;
-            Exiled.Events.Handlers.Player.Left += _events.OnLeft;
+            PlayerEvents.ChangingRole += _events.OnPlayerChangingRole;
+            PlayerEvents.Left += _events.OnLeft;
 #endif
+            
+            Logger.Debug("Subscribed to events", Config.Debug);
 
-            HeaderSetting header = new(Translation.ServerSpecificSettingHeading);
-            IEnumerable<SettingBase> settings = new SettingBase[]
-            {
-                header,
-                new TwoButtonsSetting(Config.ServerSpecificSettingId, Translation.OverlaySettingText,
-                    Translation.Enable, Translation.Disable, hintDescription: Translation.OverlaySettingHint)
-            };
+            SSGroupHeader header = new(Translation.ServerSpecificSettingHeading);
+            SSTwoButtonsSetting setting = new(Config.ServerSpecificSettingId, Translation.OverlaySettingText, Translation.Enable, Translation.Disable, hint:Translation.OverlaySettingHint);
 
-            SettingBase.Register(settings);
-            SettingBase.SendToAll();
+            ServerSpecificSettingsSync.DefinedSettings = [..ServerSpecificSettingsSync.DefinedSettings, header, setting];
+            
+            Logger.Debug("Registered settings", Config.Debug);
+                
+            ServerSpecificSettingsSync.SendToAll();
+            
+            Logger.Debug("Sending to all players...", Config.Debug);
 
+#if EXILED
             base.OnEnabled();
+#endif
         }
 
+#if LabAPI
+        public override void Disable()
+#elif EXILED
         public override void OnDisabled()
+#endif
         {
-            Server.RoundStarted -= _events.OnRoundStart;
-            Player.Verified -= _events.OnPlayerVerified;
+            ServerEvents.RoundStarted -= _events.OnRoundStart;
+            PlayerEvents.Joined -= _events.OnPlayerVerified;
 #if HSM
-            Exiled.Events.Handlers.Player.ChangingRole -= _events.OnPlayerChangingRole;
-            Exiled.Events.Handlers.Player.Left -= _events.OnLeft;
+            PlayerEvents.ChangingRole -= _events.OnPlayerChangingRole;
+            PlayerEvents.Left -= _events.OnLeft;
 #endif
             _events = null;
             _hintManager = null;
+#if EXILED
             base.OnDisabled();
+#endif
         }
+        
+#if LabAPI
+        public override void LoadConfigs()
+        {
+            this.TryLoadConfig("config.yml", out Config config);
+            Config = config ?? new Config();
+            this.TryLoadConfig("translation.yml", out Translation translation);
+            Translation = translation ?? new Translation();
+        }
+#endif
     }
 }
