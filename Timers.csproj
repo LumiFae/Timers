@@ -13,6 +13,7 @@
         <SignAssembly>false</SignAssembly>
         <DebugType>none</DebugType>
         <Configurations>EXILED-HSM;EXILED-RUEI;LabAPI-RUEI;LabAPI-HSM</Configurations>
+        <AssemblyName>Timers-$(Configuration)</AssemblyName>
     </PropertyGroup>
     <PropertyGroup>
         <DefineConstants Condition="$(Configuration.Contains('EXILED'))">$(DefineConstants);EXILED</DefineConstants>
