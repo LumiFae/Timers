@@ -1,14 +1,12 @@
 ﻿# Timers ![Downloads](https://img.shields.io/github/downloads/LumiFae/Timers/total)
 
-A simple EXILED plugin that adds spawn timers below each spawn bar in the Spectator UI.
+A simple plugin that adds spawn timers below each spawn bar in the Spectator UI.
 
 ![Example](https://github.com/LumiFae/Timers/blob/master/imgs/snippet.png)
 
 Dependencies:
 
 [RueI](https://github.com/LolaLollipop/RueI) or [HintServiceMeow](https://github.com/MeowServer/HintServiceMeow)
-
-EXILED (v9 required)
 
 ### Timers is breaking on the 2nd round?
 
@@ -18,13 +16,15 @@ RueI may be the cause, it has issues with 2 very common plugins from what I've s
 
 You can download the latest release from the [releases](https://github.com/LumiFae/Timers/releases/latest) page.
 
-Decide which version of Timers you are using, if you are using RueI, then use Timers-RueI.dll. If you are using
-HintServiceMeow then use Timers-HSM.dll.
+Decide on what framework you are chosing to use first, either LabAPI or Exiled. Only difference here is how you load the plugins, you can use LabAPI on any EXILED server anyway. I recommend LabAPI.
 
-If you are using neither, I recommend RueI, if you don't already have RueI on your server installed, you can get it from [here](https://github.com/pawslee/RueI/releases/latest).
+Then choose on the hint framework, you either have RueI or HSM, your choice.
 
-Put the downloaded plugin file inside your EXILED/Plugins folder, and if using RueI, then put the RueI.dll inside
-EXILED/Plugins/dependencies.
+Download the right `.dll` file depending on those options.
+
+If you are using neither RueI or HSM as your hint frameworks, I recommend RueI, if you don't already have RueI on your server installed, you can get it from [here](https://github.com/pawslee/RueI/releases/latest).
+
+Put the downloaded plugin file inside the framework you have chosen's plugin folder, and then if you are using RueI, put RueI.dll into dependencies for that specific framework. If HSM, HSM is a plugin so that must be put in the plugins folder.
 
 Restart your server, change config values (if needed) and you're good to go!
 
