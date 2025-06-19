@@ -14,6 +14,7 @@
         <DebugType>none</DebugType>
         <Configurations>EXILED-HSM;EXILED-RUEI;LabAPI-RUEI;LabAPI-HSM</Configurations>
         <AssemblyName>Timers-$(Configuration)</AssemblyName>
+        <OutputPath>bin\</OutputPath>
     </PropertyGroup>
     <PropertyGroup>
         <DefineConstants Condition="$(Configuration.Contains('EXILED'))">$(DefineConstants);EXILED</DefineConstants>
