@@ -9,6 +9,7 @@ using RueI.Elements;
 using System.Drawing;
 using System.Text;
 using LabApi.Features.Console;
+using NorthwoodLib.Pools;
 using PlayerRoles;
 using Respawning;
 using Respawning.Objectives;
@@ -114,7 +115,7 @@ namespace Timers
                 return string.Empty;
             }
 
-            StringBuilder builder = new StringBuilder()
+            StringBuilder builder = StringBuilderPool.Shared.Rent()
                 .Append("<align=center>");
 
             if (WaveManager._nextWave != null
@@ -135,8 +136,8 @@ namespace Timers
                 builder.Append(TimerText(chaosTime));
 
             builder.Append("</align>");
-
-            return builder.ToString();
+            
+            return StringBuilderPool.Shared.ToStringReturn(builder);
         }
     }
 }

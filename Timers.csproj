@@ -30,6 +30,7 @@
         <Reference Include="UnityEngine" HintPath="$(EXILED_REFERENCES)\UnityEngine.dll" Private="false" />
         <Reference Include="UnityEngine.CoreModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
+        <Reference Include="NorthwoodLib" HintPath="$(EXILED_REFERENCES)\NorthwoodLib.dll" Private="false" />
         <Reference Include="HintServiceMeow-Exiled" Condition="$(Configuration.Contains('EXILED-HSM'))" HintPath="$(EXILED_REFERENCES)\HintServiceMeow-Exiled.dll" Private="false" />
         <Reference Include="HintServiceMeow-LabAPI" Condition="$(Configuration.Contains('LabAPI-HSM'))" HintPath="$(EXILED_REFERENCES)\HintServiceMeow-LabAPI.dll" Private="false" />
     </ItemGroup>
