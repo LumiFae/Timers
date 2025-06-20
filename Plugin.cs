@@ -66,7 +66,7 @@ namespace Timers
             SSGroupHeader header = new(Translation.ServerSpecificSettingHeading);
             SSTwoButtonsSetting setting = new(Config.ServerSpecificSettingId, Translation.OverlaySettingText, Translation.Enable, Translation.Disable, hint:Translation.OverlaySettingHint);
 
-            ServerSpecificSettingsSync.DefinedSettings = [..ServerSpecificSettingsSync.DefinedSettings, header, setting];
+            ServerSpecificSettingsSync.DefinedSettings = [..ServerSpecificSettingsSync.DefinedSettings ?? [], header, setting];
             
             Logger.Debug("Registered settings", Config.Debug);
                 
