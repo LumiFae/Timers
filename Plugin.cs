@@ -21,7 +21,7 @@ namespace Timers
         private HintManager _hintManager;
         public override string Name => "Timers";
         public override string Author => "LumiFae";
-        public override Version Version => new(1, 4, 0);
+        public override Version Version => new(1, 4, 1);
         
 #if EXILED
         public override Version RequiredExiledVersion => new(9, 2, 1);
