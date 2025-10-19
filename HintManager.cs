@@ -1,79 +1,46 @@
-﻿#if HSM
-using HintServiceMeow.Core.Enum;
-using HintServiceMeow.Core.Models.Hints;
-#elif RUEI
-using RueI;
-using RueI.Displays;
-using RueI.Elements;
-#endif
-using System.Drawing;
+﻿using System.Drawing;
 using System.Text;
 using LabApi.Features.Console;
+using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
 using PlayerRoles;
 using Respawning;
-using Respawning.Objectives;
-using Respawning.Waves;
-using UserSettings.ServerSpecific;
+using RueI.API.Elements;
 
 namespace Timers
 {
-    public class HintManager
+    public static class HintManager
     {
-        public static HintManager Instance { get; set; }
-
         private static Config Config => Plugin.Instance.Config;
         private static Translation Translation => Plugin.Instance.Translation;
 
-        public void Initialise()
+        private static MtfWave? NtfWave => RespawnWaves.PrimaryMtfWave;
+        private static MiniMtfWave? NtfMiniWave => RespawnWaves.MiniMtfWave;
+        private static ChaosWave? ChaosWave => RespawnWaves.PrimaryChaosWave;
+        private static MiniChaosWave? ChaosMiniWave => RespawnWaves.MiniChaosWave;
+
+        public static CachedElement Element { get; } = new(910, TimeSpan.FromSeconds(1), GetTimers)
         {
-            Instance = this;
+            UpdateInterval = TimeSpan.FromSeconds(1)
+        };
+        
+        public static Tag Tag { get; } = new("Timers");
 
-#if RUEI
-            RueIMain.EnsureInit();
+        private static TimeSpan NtfRespawnTime()
+        {
+            if (NtfMiniWave != null && !NtfMiniWave.Base.Timer.IsPaused) return TimeSpan.FromSeconds(NtfMiniWave.TimeLeft);
 
-            RespawnTimerDisplay = new(Roles.Spectator | Roles.Overwatch, new DynamicElement(core => GetTimers(core.Hub), 910))
-            {
-                UpdateEvery = new(TimeSpan.FromSeconds(1))
-            };
-#elif HSM
-            RespawnTimerDisplay = new()
-            {
-                AutoText = arg => GetTimers(arg.PlayerDisplay.ReferenceHub),
-                TargetY = 105,
-                FontSize = 35,
-                SyncSpeed = HintSyncSpeed.Fast
-            };
-#endif
-            Logger.Debug("Initialised", Config.Debug);
+            return NtfWave != null ? TimeSpan.FromSeconds(NtfWave.TimeLeft) : TimeSpan.Zero;
         }
 
-        internal NtfSpawnWave NtfWave;
-        internal NtfMiniWave NtfMiniWave;
-        internal ChaosSpawnWave ChaosWave;
-        internal ChaosMiniWave ChaosMiniWave;
-
-#if RUEI
-        internal AutoElement RespawnTimerDisplay { private set; get; }
-#else
-        internal DynamicHint RespawnTimerDisplay { private set; get; }
-#endif
-
-        private TimeSpan NtfRespawnTime()
+        private static TimeSpan ChaosRespawnTime()
         {
-            if (NtfMiniWave != null && !NtfMiniWave.Timer.IsPaused) return TimeSpan.FromSeconds(NtfMiniWave.Timer.TimeLeft);
+            if (ChaosMiniWave != null && !ChaosMiniWave.Base.Timer.IsPaused) return TimeSpan.FromSeconds(ChaosMiniWave.TimeLeft);
 
-            return NtfWave != null ? TimeSpan.FromSeconds(NtfWave.Timer.TimeLeft) : TimeSpan.Zero;
+            return ChaosWave != null ? TimeSpan.FromSeconds(ChaosWave.TimeLeft) : TimeSpan.Zero;
         }
 
-        private TimeSpan ChaosRespawnTime()
-        {
-            if (ChaosMiniWave != null && !ChaosMiniWave.Timer.IsPaused) return TimeSpan.FromSeconds(ChaosMiniWave.Timer.TimeLeft);
-
-            return ChaosWave != null ? TimeSpan.FromSeconds(ChaosWave.Timer.TimeLeft) : TimeSpan.Zero;
-        }
-
-        private string TimerText(TimeSpan timer)
+        private static string TimerText(TimeSpan timer)
         {
             return Translation.Timer.Replace("{minutes}", timer.Minutes.ToString("D1"))
                 .Replace("{seconds}", timer.Seconds.ToString("D2"));
@@ -90,30 +57,16 @@ namespace Timers
             return $"#{color.R:X2}{color.G:X2}{color.B:X2}{alphaInclude}";
         }
 
-        private string GetTimers(ReferenceHub hub)
+        private static string GetTimers()
         {
+            if (!Round.IsRoundInProgress)
+                return string.Empty;
+            
             Logger.Debug("Getting timers...", Config.Debug);
             TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             if (ntfTime < TimeSpan.Zero) ntfTime = TimeSpan.Zero;
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);
             if (chaosTime < TimeSpan.Zero) chaosTime = TimeSpan.Zero;
-
-            SSTwoButtonsSetting setting;
-            try
-            {
-                setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(hub, Config.ServerSpecificSettingId);
-            }
-            catch (NullReferenceException)
-            {
-                Logger.Debug($"Could not get setting from {hub.GetNickname()}", Config.Debug);
-                return string.Empty;
-            }
-
-            if (setting.SyncIsB)
-            {
-                Logger.Debug($"User {hub.GetNickname()} has opted out of getting their timer", Config.Debug);
-                return string.Empty;
-            }
 
             StringBuilder builder = StringBuilderPool.Shared.Rent()
                 .Append("<align=center>");

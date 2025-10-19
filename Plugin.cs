@@ -1,111 +1,59 @@
-﻿using LabApi.Events.Handlers;
+﻿using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
 using UserSettings.ServerSpecific;
-#if EXILED
-using Exiled.API.Features;
-#elif LabAPI
 using LabApi.Loader;
-#endif
 
 namespace Timers
 {
-    public class Plugin : 
-#if LabAPI
-        LabApi.Loader.Features.Plugins.Plugin
-#elif EXILED
-        Plugin<Config, Translation>
-#endif
+    public class Plugin : LabApi.Loader.Features.Plugins.Plugin
     {
 
-        private Events _events;
-        private HintManager _hintManager;
+        private Events _events = null!;
         public override string Name => "Timers";
         public override string Author => "LumiFae";
         public override Version Version => new(1, 4, 1);
         
-#if EXILED
-        public override Version RequiredExiledVersion => new(9, 2, 1);
-        public override string Prefix => "Timers";
-#elif LabAPI
         public override string Description { get; } = "Adds countdown timers to the respawn UI";
         public override Version RequiredApiVersion { get; } = new (1, 0, 2);
-#endif
 
-        public static Plugin Instance { private set; get; }
-        
-#if LabAPI
-        public Translation Translation { get; private set; }
-        public Config Config { get; private set; }
-#endif
+        public static Plugin Instance { private set; get; } = null!;
 
-        #if EXILED
-        public override void OnEnabled()
-#elif LabAPI
+        public Translation Translation { get; private set; } = null!;
+        public Config Config { get; private set; } = null!;
+
+        internal SSTwoButtonsSetting Setting { get; private set; } = null!;
+
         public override void Enable()
-#endif
         {
-#if LabAPI
-            if (!Config.IsEnabled) return;
-#endif
             Logger.Debug("Enabling plugin...", Config.Debug);
             Instance = this;
 
             _events = new();
-            _hintManager = new();
-            _hintManager.Initialise();
+            CustomHandlersManager.RegisterEventsHandler(_events);
 
-            ServerEvents.RoundStarted += _events.OnRoundStart;
-            PlayerEvents.Joined += _events.OnPlayerVerified;
-#if HSM
-            PlayerEvents.ChangingRole += _events.OnPlayerChangingRole;
-            PlayerEvents.Left += _events.OnLeft;
-#endif
-            
-            Logger.Debug("Subscribed to events", Config.Debug);
+            ServerSpecificSettingsSync.ServerOnSettingValueReceived += Events.OnSettingUpdated;
 
             SSGroupHeader header = new(Translation.ServerSpecificSettingHeading);
-            SSTwoButtonsSetting setting = new(Config.ServerSpecificSettingId, Translation.OverlaySettingText, Translation.Enable, Translation.Disable, hint:Translation.OverlaySettingHint);
+            Setting = new SSTwoButtonsSetting(Config.ServerSpecificSettingId, Translation.OverlaySettingText, Translation.Enable, Translation.Disable, hint:Translation.OverlaySettingHint);
 
-            ServerSpecificSettingsSync.DefinedSettings = [..ServerSpecificSettingsSync.DefinedSettings ?? [], header, setting];
-            
-            Logger.Debug("Registered settings", Config.Debug);
+            ServerSpecificSettingsSync.DefinedSettings = [..ServerSpecificSettingsSync.DefinedSettings ?? [], header, Setting];
                 
             ServerSpecificSettingsSync.SendToAll();
-            
-            Logger.Debug("Sending to all players...", Config.Debug);
-
-#if EXILED
-            base.OnEnabled();
-#endif
         }
 
-#if LabAPI
         public override void Disable()
-#elif EXILED
-        public override void OnDisabled()
-#endif
         {
-            ServerEvents.RoundStarted -= _events.OnRoundStart;
-            PlayerEvents.Joined -= _events.OnPlayerVerified;
-#if HSM
-            PlayerEvents.ChangingRole -= _events.OnPlayerChangingRole;
-            PlayerEvents.Left -= _events.OnLeft;
-#endif
-            _events = null;
-            _hintManager = null;
-#if EXILED
-            base.OnDisabled();
-#endif
+            CustomHandlersManager.UnregisterEventsHandler(_events);   
+            ServerSpecificSettingsSync.ServerOnSettingValueReceived -= Events.OnSettingUpdated;
+            _events = null!;
         }
         
-#if LabAPI
         public override void LoadConfigs()
         {
-            this.TryLoadConfig("config.yml", out Config config);
+            this.TryLoadConfig("config.yml", out Config? config);
             Config = config ?? new Config();
-            this.TryLoadConfig("translation.yml", out Translation translation);
+            this.TryLoadConfig("translation.yml", out Translation? translation);
             Translation = translation ?? new Translation();
         }
-#endif
     }
 }

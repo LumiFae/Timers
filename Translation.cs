@@ -1,13 +1,6 @@
-﻿#if EXILED
-using Exiled.API.Interfaces;
-#endif
-
-namespace Timers
+﻿namespace Timers
 {
     public class Translation
-#if EXILED
-        : ITranslation
-#endif
     {
         public string Timer { get; set; } = "{minutes}<size=22>M</size> {seconds}<size=22>S</size>";
         public string ServerSpecificSettingHeading { get; set; } = "Respawn Timer Settings";

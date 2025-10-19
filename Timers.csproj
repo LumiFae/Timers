@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>disable</Nullable>
+        <Nullable>enable</Nullable>
         <LangVersion>preview</LangVersion>
         <PlatformTarget>x64</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -12,15 +12,7 @@
         <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
         <SignAssembly>false</SignAssembly>
         <DebugType>none</DebugType>
-        <Configurations>EXILED-HSM;EXILED-RUEI;LabAPI-RUEI;LabAPI-HSM</Configurations>
-        <AssemblyName>Timers-$(Configuration)</AssemblyName>
         <OutputPath>bin\</OutputPath>
-    </PropertyGroup>
-    <PropertyGroup>
-        <DefineConstants Condition="$(Configuration.Contains('EXILED'))">$(DefineConstants);EXILED</DefineConstants>
-        <DefineConstants Condition="$(Configuration.Contains('LabAPI'))">$(DefineConstants);LabAPI</DefineConstants>
-        <DefineConstants Condition="$(Configuration.Contains('RUEI'))">$(DefineConstants);RUEI</DefineConstants>
-        <DefineConstants Condition="$(Configuration.Contains('HSM'))">$(DefineConstants);HSM</DefineConstants>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="false" Publicize="true" />
@@ -31,13 +23,10 @@
         <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
         <Reference Include="NorthwoodLib" HintPath="$(SL_REFERENCES)\NorthwoodLib.dll" Private="false" />
-        <Reference Include="HintServiceMeow-Exiled" Condition="$(Configuration.Contains('EXILED-HSM'))" HintPath=".\dependencies\HintServiceMeow-Exiled.dll" Private="false" />
-        <Reference Include="HintServiceMeow-LabAPI" Condition="$(Configuration.Contains('LabAPI-HSM'))" HintPath=".\dependencides\HintServiceMeow-LabAPI.dll" Private="false" />
     </ItemGroup>
     <ItemGroup>
-        <PackageReference Condition="$(DefineConstants.Contains('EXILED'))" Include="ExMod.Exiled" Version="9.6.0" />
-        <PackageReference Condition="$(DefineConstants.Contains('RUEI'))" Include="RueI" Version="2.1.0" />
-        <PackageReference Include="Northwood.LabAPI" Version="1.0.2" />
+        <PackageReference Include="RueI" Version="3.1.2" />
+        <PackageReference Include="Northwood.LabAPI" Version="1.1.3" />
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" ExcludeAssets="runtime" ReferenceOutputAssembly="false" Private="true" />
     </ItemGroup>
 </Project>
