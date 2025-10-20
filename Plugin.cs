@@ -11,7 +11,7 @@ namespace Timers
         private Events _events = null!;
         public override string Name => "Timers";
         public override string Author => "LumiFae";
-        public override Version Version => new(1, 4, 1);
+        public override Version Version => new(1, 5, 0);
         
         public override string Description { get; } = "Adds countdown timers to the respawn UI";
         public override Version RequiredApiVersion { get; } = new (1, 0, 2);
