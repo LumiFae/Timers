@@ -1,11 +1,14 @@
-﻿using System.Drawing;
-using System.Text;
-using LabApi.Features.Console;
+﻿using System.Text;
 using LabApi.Features.Wrappers;
+using MEC;
 using NorthwoodLib.Pools;
 using PlayerRoles;
 using Respawning;
+using RueI.API;
 using RueI.API.Elements;
+using UserSettings.ServerSpecific;
+using Color = System.Drawing.Color;
+using Logger = LabApi.Features.Console.Logger;
 
 namespace Timers
 {
@@ -19,10 +22,45 @@ namespace Timers
         private static ChaosWave? ChaosWave => RespawnWaves.PrimaryChaosWave;
         private static MiniChaosWave? ChaosMiniWave => RespawnWaves.MiniChaosWave;
 
-        public static CachedElement Element { get; } = new(910, TimeSpan.FromSeconds(1), GetTimers)
+        public static BasicElement CurrentElement { get; private set; } = new(910, GetTimers());
+
+        public static IEnumerator<float> GenerateElements()
         {
-            UpdateInterval = TimeSpan.FromSeconds(1)
-        };
+            while (Round.IsRoundStarted)
+            {
+                Logger.Debug("Generating elements", Plugin.Instance.Config.Debug);
+                CurrentElement = new(910, GetTimers());
+                foreach (Player player in Player.ReadyList.Where(player => !player.IsAlive))
+                {
+                    player.AddHint();
+                }
+                yield return Timing.WaitForSeconds(1);
+            }
+        }
+
+        public static void AddHint(this Player player)
+        {
+            SSTwoButtonsSetting setting;
+
+            try
+            {
+                setting = ServerSpecificSettingsSync.GetSettingOfUser<SSTwoButtonsSetting>(player.ReferenceHub,
+                    Plugin.Instance.Setting.SettingId);
+            }
+            catch (NullReferenceException)
+            {
+                return;
+            }
+
+            if (setting == null)
+                return;
+
+            if (setting.SyncIsB)
+                return;
+            
+            RueDisplay display = RueDisplay.Get(player);
+            display.Show(Tag, CurrentElement);
+        }
         
         public static Tag Tag { get; } = new("Timers");
 
@@ -59,10 +97,6 @@ namespace Timers
 
         private static string GetTimers()
         {
-            if (!Round.IsRoundInProgress)
-                return string.Empty;
-            
-            Logger.Debug("Getting timers...", Config.Debug);
             TimeSpan ntfTime = NtfRespawnTime() + TimeSpan.FromSeconds(18);
             if (ntfTime < TimeSpan.Zero) ntfTime = TimeSpan.Zero;
             TimeSpan chaosTime = ChaosRespawnTime() + TimeSpan.FromSeconds(13);

@@ -5,6 +5,8 @@ using PlayerRoles;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
+using LabApi.Features.Wrappers;
+using MEC;
 using PlayerRoles;
 using Respawning;
 using Respawning.Waves;
@@ -15,14 +17,22 @@ namespace Timers
 {
     public class Events : CustomEventsHandler
     {
-        public override void OnPlayerJoined(PlayerJoinedEventArgs ev)
-        {
-            Logger.Debug("Player joined, sending settings.", Plugin.Instance.Config.Debug);
+        public override void OnPlayerJoined(PlayerJoinedEventArgs ev) =>
             ServerSpecificSettingsSync.SendToPlayer(ev.Player.ReferenceHub);
+
+        public override void OnPlayerChangedRole(PlayerChangedRoleEventArgs ev)
+        {
+            if (ev.NewRole.Team != Team.Dead)
+            {
+                RueDisplay.Get(ev.Player).Remove(HintManager.Tag);
+                return;
+            }
+            
+            ev.Player.AddHint();
         }
 
-        public override void OnPlayerChangedRole(PlayerChangedRoleEventArgs ev) =>
-            RueDisplay.Get(ev.Player).SetVisible(HintManager.Tag, !ev.Player.IsAlive);
+        public override void OnServerRoundStarted() =>
+            Timing.RunCoroutine(HintManager.GenerateElements());
 
         public static void OnSettingUpdated(ReferenceHub hub, ServerSpecificSettingBase setting)
         {
@@ -30,13 +40,15 @@ namespace Timers
                 return;
 
             RueDisplay display = RueDisplay.Get(hub);
-            
-            if(buttons.SyncIsB)
+
+            if (buttons.SyncIsB)
                 display.Remove(HintManager.Tag);
-            else
-                display.Show(HintManager.Tag, HintManager.Element);
+            else if (hub.roleManager.CurrentRole.Team == Team.Dead && Round.IsRoundStarted) 
+            {
+                display.Show(HintManager.Tag, HintManager.CurrentElement);
+            }
             
-            display.SetVisible(HintManager.Tag, hub.roleManager.CurrentRole.Team == Team.Dead);
+            Logger.Debug($"Player settings updated, round is {(Round.IsRoundStarted ? "started" : "not started")}", Plugin.Instance.Config.Debug);
         }
     }
 }
